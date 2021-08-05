@@ -1,3 +1,7 @@
+export interface Eq<T> {
+  equals(other: T): boolean;
+}
+
 export interface Functor<T> {
   map<U>(fn: (t: T) => U): Functor<U>;
 }

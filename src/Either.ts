@@ -1,6 +1,6 @@
-import { Monad } from "./Monad";
+import { Eq, Monad } from "./Monad";
 
-interface EitherType<R> extends Monad<R> {
+interface EitherType<R> extends Monad<R>, Eq<EitherType<R>> {
   isLeft(): boolean;
   isRight(): boolean;
 }

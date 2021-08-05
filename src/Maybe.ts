@@ -1,6 +1,6 @@
-import { Monad } from "./Monad";
+import { Eq, Monad } from "./Monad";
 
-interface MaybeType<T> extends Monad<T> {
+interface MaybeType<T> extends Monad<T>, Eq<MaybeType<T>> {
   isNothing(): boolean;
   isJust(): boolean;
 }
