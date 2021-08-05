@@ -31,8 +31,19 @@ export class Writer<W, T> implements Monad<T> {
       written: thisWritten.concat(fnWritten),
     });
   }
+
+  public then<U>(writer: Writer<W, U>): Writer<W, U> {
+    return new Writer({
+      value: writer.runWriter.value,
+      written: this.runWriter.written.concat(writer.runWriter.written),
+    });
+  }
 }
 
 export function writer<W, T>(runWriter: RunWriter<W, T>): Writer<W, T> {
   return new Writer(runWriter);
+}
+
+export function tell<W>(msg: W): Writer<W, number> {
+  return writer({ value: 0, written: [msg] });
 }
