@@ -1,0 +1,26 @@
+{
+  "name": "simple-monads",
+  "version": "0.0.1",
+  "description": "My own attempt at implementing some monads in TypeScript",
+  "repository": "git@github-sylvain:sylvaindesve/simple-monads.git",
+  "author": "Sylvain Desvé <sylvain.desve@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "start": "ts-node examples/index.ts"
+  },
+  "dependencies": {
+    "typescript": "^4.3.5"
+  },
+  "devDependencies": {
+    "@types/node": "^16.4.12",
+    "@typescript-eslint/eslint-plugin": "^4.29.0",
+    "@typescript-eslint/parser": "^4.29.0",
+    "eslint": "^7.32.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-import": "^2.23.4",
+    "eslint-plugin-jsdoc": "^36.0.6",
+    "eslint-plugin-prefer-arrow": "^1.2.3",
+    "prettier": "^2.3.2",
+    "ts-node": "^10.1.0"
+  }
+}
