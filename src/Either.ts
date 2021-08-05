@@ -1,78 +1,77 @@
-interface EitherType<L, R> {
+import { Monad } from "./Monad";
+
+interface EitherType<R> extends Monad<R> {
   isLeft(): boolean;
   isRight(): boolean;
-  fmap<R1 extends R, R2>(fn: (a: R1) => R2): Either<L, R2>;
-  apply<R1 extends R, R2>(fn: Either<L, (a: R1) => R2>): Either<L, R2>;
-  bind<R1 extends R, R2>(fn: (a: R1) => Either<L, R2>): Either<L, R2>;
 }
 
-class LeftType<L, R> implements EitherType<L, R> {
+class Left<L, R> implements EitherType<R> {
   constructor(public readonly left: L) {}
 
-  public isLeft(): this is LeftType<L, R> {
+  public isLeft(): this is Left<L, R> {
     return true;
   }
 
-  public isRight(): this is RightType<L, R> {
+  public isRight(): this is Right<L, R> {
     return false;
   }
 
-  public fmap<R1 extends R, R2>(_fn: (a: R1) => R2): Either<L, R2> {
-    return Left(this.left);
+  public map<U>(_fn: (a: R) => U): Either<L, U> {
+    return left(this.left);
   }
 
-  public apply<R1 extends R, R2>(_fn: Either<L, (a: R1) => R2>): Either<L, R2> {
-    return Left(this.left);
+  public ap<U>(_fn: Either<L, (a: R) => U>): Either<L, U> {
+    return left(this.left);
   }
 
-  public bind<R1 extends R, R2>(_fn: (a: R1) => Either<L, R2>): Either<L, R2> {
-    return Left(this.left);
+  public chain<U>(_fn: (a: R) => Either<L, U>): Either<L, U> {
+    return left(this.left);
   }
 
   public equals(other: Either<L, R>): boolean {
     return other.isLeft() && other.left === this.left;
   }
 }
-export function Left<L, R>(left: L): LeftType<L, R> {
-  return new LeftType(left);
+export function left<L, R>(left: L): Left<L, R> {
+  return new Left(left);
 }
 
-class RightType<L, R> implements EitherType<L, R> {
+class Right<L, R> implements EitherType<R> {
   constructor(public readonly right: R) {}
 
-  public isLeft(): this is LeftType<L, R> {
+  public isLeft(): this is Left<L, R> {
     return false;
   }
 
-  public isRight(): this is RightType<L, R> {
+  public isRight(): this is Right<L, R> {
     return true;
   }
 
-  public fmap<R1 extends R, R2>(fn: (a: R1) => R2): Either<L, R2> {
-    return Right(fn(this.right as R1));
+  public map<U>(fn: (a: R) => U): Either<L, U> {
+    return right(fn(this.right));
   }
 
-  public apply<R1 extends R, R2>(fn: Either<L, (a: R1) => R2>): Either<L, R2> {
+  public ap<U>(fn: Either<L, (a: R) => U>): Either<L, U> {
     if (fn.isRight()) {
-      return this.fmap(fn.right);
+      return this.map(fn.right);
     } else {
-      return Left(fn.left);
+      return left(fn.left);
     }
   }
 
-  public bind<R1 extends R, R2>(fn: (a: R1) => Either<L, R2>): Either<L, R2> {
-    return fn(this.right as R1);
+  public chain<U>(fn: (a: R) => Either<L, U>): Either<L, U> {
+    return fn(this.right);
   }
 
   public equals(other: Either<L, R>): boolean {
     return other.isRight() && other.right === this.right;
   }
 }
-export function Right<L, R>(right: R): RightType<L, R> {
-  return new RightType(right);
+export function right<L, R>(right: R): Right<L, R> {
+  return new Right(right);
 }
 
-export type Either<A, B> = LeftType<A, B> | RightType<A, B>;
+export type Either<A, B> = Left<A, B> | Right<A, B>;
 
 export function liftEither<L, R1, R2>(
   fn: (t: R1) => Either<L, R2>
@@ -81,7 +80,7 @@ export function liftEither<L, R1, R2>(
     if (t.isRight()) {
       return fn(t.right);
     } else {
-      return Left(t.left);
+      return left(t.left);
     }
   };
 }

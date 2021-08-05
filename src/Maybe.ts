@@ -1,30 +1,29 @@
-interface MaybeType<T> {
+import { Monad } from "./Monad";
+
+interface MaybeType<T> extends Monad<T> {
   isNothing(): boolean;
   isJust(): boolean;
-  fmap<P extends T, R>(_fn: (a: P) => R): Maybe<R>;
-  apply<A extends T, B>(_fn: Maybe<(a: A) => B>): Maybe<B>;
-  bind<A extends T, B>(_fn: (a: A) => Maybe<B>): Maybe<B>;
 }
 
-class NothingType<T> implements MaybeType<T> {
-  public isNothing(): this is NothingType<T> {
+class Nothing<T> implements MaybeType<T> {
+  public isNothing(): this is Nothing<T> {
     return true;
   }
 
-  public isJust(): this is JustType<T> {
+  public isJust(): this is Just<T> {
     return false;
   }
 
-  public fmap<P extends T, R>(_fn: (a: P) => R): Maybe<R> {
-    return Nothing as Maybe<R>;
+  public map<U>(_fn: (a: T) => U): Maybe<U> {
+    return nothing();
   }
 
-  public apply<A extends T, B>(_fn: Maybe<(a: A) => B>): Maybe<B> {
-    return Nothing as Maybe<B>;
+  public ap<U>(_fn: Maybe<(a: T) => U>): Maybe<U> {
+    return nothing();
   }
 
-  public bind<A extends T, B>(_fn: (a: A) => Maybe<B>): Maybe<B> {
-    return Nothing as Maybe<B>;
+  public chain<U>(_fn: (a: T) => Maybe<U>): Maybe<U> {
+    return nothing();
   }
 
   public equals(other: Maybe<T>): boolean {
@@ -32,31 +31,31 @@ class NothingType<T> implements MaybeType<T> {
   }
 }
 
-class JustType<T> implements MaybeType<T> {
+class Just<T> implements MaybeType<T> {
   constructor(public readonly value: T) {}
 
-  public isNothing(): this is NothingType<T> {
+  public isNothing(): this is Nothing<T> {
     return false;
   }
 
-  public isJust(): this is JustType<T> {
+  public isJust(): this is Just<T> {
     return true;
   }
 
-  public fmap<P extends T, R>(fn: (a: P) => R): Maybe<R> {
-    return Just(fn(this.value as P));
+  public map<U>(fn: (a: T) => U): Maybe<U> {
+    return just(fn(this.value));
   }
 
-  public apply<A extends T, B>(fn: Maybe<(a: A) => B>): Maybe<B> {
+  public ap<U>(fn: Maybe<(a: T) => U>): Maybe<U> {
     if (fn.isJust()) {
-      return this.fmap(fn.value);
+      return this.map(fn.value);
     } else {
-      return Nothing as Maybe<B>;
+      return nothing();
     }
   }
 
-  public bind<A extends T, B>(fn: (a: A) => Maybe<B>): Maybe<B> {
-    return fn(this.value as A);
+  public chain<U>(fn: (a: T) => Maybe<U>): Maybe<U> {
+    return fn(this.value);
   }
 
   public equals(other: Maybe<T>): boolean {
@@ -64,12 +63,14 @@ class JustType<T> implements MaybeType<T> {
   }
 }
 
-export const Nothing = new NothingType();
-export function Just<T>(value: T): JustType<T> {
-  return new JustType(value);
+export function nothing<T>(): Nothing<T> {
+  return new Nothing<T>();
+}
+export function just<T>(value: T): Just<T> {
+  return new Just(value);
 }
 
-export type Maybe<T> = JustType<T> | NothingType<T>;
+export type Maybe<T> = Just<T> | Nothing<T>;
 
 export function liftMaybe<A, B>(
   fn: (t: A) => Maybe<B>
@@ -78,7 +79,7 @@ export function liftMaybe<A, B>(
     if (t.isJust()) {
       return fn(t.value);
     } else {
-      return Nothing as Maybe<B>;
+      return nothing();
     }
   };
 }
