@@ -46,10 +46,12 @@ export const run = (): void => {
   }
 
   // Desugaring do notation : https://en.wikibooks.org/wiki/Haskell/do_notation
-  const multWithLog: Writer<string, number> = logNumber(3).chain((a: number) =>
+  // prettier-ignore
+  const multWithLog: Writer<string, number> =
+    logNumber(3).chain((a: number) =>
     logNumber(5).chain((b: number) =>
-      tell(`multiply ${a} with ${b}`).then(writer([] as string[], a * b))
-    )
+    tell(`multiply ${a} with ${b}`).then(
+    writer([] as string[], a * b)))
   );
 
   console.log(multWithLog);
