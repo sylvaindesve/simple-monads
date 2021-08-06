@@ -44,6 +44,11 @@ export function writer<W, T>(written: W[], value: T): Writer<W, T> {
   return new Writer({ value, written });
 }
 
+// https://github.com/fantasyland/fantasy-land#applicative
+export function of<W, T>(value: T): Writer<W, T> {
+  return writer([] as W[], value);
+}
+
 export function tell<W>(msg: W): Writer<W, void> {
   return new Writer({ value: void null, written: [msg] });
 }

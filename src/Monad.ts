@@ -8,13 +8,17 @@ export interface Functor<T> {
 }
 
 // https://github.com/fantasyland/fantasy-land#apply
-export interface Apply<T> {
+export interface Apply<T> extends Functor<T> {
   ap<U>(fn: Apply<(t: T) => U>): Apply<U>;
 }
 
 // https://github.com/fantasyland/fantasy-land#chain
-export interface Chain<T> {
+export interface Chain<T> extends Apply<T> {
   chain<U>(fn: (t: T) => Chain<U>): Chain<U>;
 }
 
-export interface Monad<T> extends Functor<T>, Apply<T>, Chain<T> {}
+// https://github.com/fantasyland/fantasy-land#applicative
+
+// https://github.com/fantasyland/fantasy-land#monad
+// Monad shoudl also be an Applicative and provide an `of` function.
+export type Monad<T> = Chain<T>;

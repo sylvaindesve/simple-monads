@@ -70,6 +70,9 @@ export function just<T>(value: T): Just<T> {
   return new Just(value);
 }
 
+// https://github.com/fantasyland/fantasy-land#applicative
+export const of = just;
+
 export type Maybe<T> = Just<T> | Nothing<T>;
 
 export function liftMaybe<A, B>(

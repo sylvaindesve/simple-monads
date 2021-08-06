@@ -71,6 +71,9 @@ export function right<L, R>(right: R): Right<L, R> {
   return new Right(right);
 }
 
+// https://github.com/fantasyland/fantasy-land#applicative
+export const of = right;
+
 export type Either<A, B> = Left<A, B> | Right<A, B>;
 
 export function liftEither<L, R1, R2>(

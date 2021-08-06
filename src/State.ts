@@ -37,10 +37,16 @@ class State<S, R> implements Monad<R> {
     });
   }
 }
+
 export function state<S, R>(
   runState: (s: S) => StatefulResult<S, R>
 ): State<S, R> {
   return new State(runState);
+}
+
+// https://github.com/fantasyland/fantasy-land#applicative
+export function of<S, T>(value: T): State<S, T> {
+  return state((s: S) => ({ result: value, state: s }));
 }
 
 export function sequenceState_<S, A>(computations: State<S, A>[]): State<S, A> {
